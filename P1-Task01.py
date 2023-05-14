@@ -1,12 +1,11 @@
 import sys
 
-A = []
-B = []
+matrix_A = []
+vector_B = []
 
-def read_files(matrixA, vectorB):
-    global A
-    global B
-    with open(matrixA, 'r') as f:
+def read_matrix_A(matrix_A):
+    global matrix_A
+    with open(matrix_A, 'r') as f:
         lines = f.readlines()
         size_of_matrix = len(lines)
         for l in lines:
@@ -15,16 +14,19 @@ def read_files(matrixA, vectorB):
                 line[i] = float(line[i])
             A.append(line)
     f.close()
-    with open(vectorB, 'r') as f2:
+    return matrix_A
+
+def read_vector_B(vector_B):
+    global vector_B
+    with open(vector_B, 'r') as f2:
         lines = f2.readlines()
         for l in lines:
             B.append(float(l))
     f2.close()
-    return A, B
+    return vector_B
 
-def LU_Decomposition(matrix_A, vector_B):
-    # Decomposing A into L and U
-    n = len(matrix_A)
+
+def LU_Only_Decomposition(matrix_A):
     for i in range(n):
         for j in range(i + 1, n):
             if matrix_A[i][i] == 0:
@@ -33,6 +35,11 @@ def LU_Decomposition(matrix_A, vector_B):
         for k in range(i + 1, n):
             for l in range(i + 1, n):
                 matrix_A[l][k] -= (matrix_A[l][i] * matrix_A[i][k])
+    return matrix_A
+
+def LU_Decomposition(matrix_A, vector_B):
+    # Decomposing A into L and U
+    n = len(matrix_A)
     # Turning B into Y
     for i in range(1, n):
         for j in range(i):
@@ -58,7 +65,7 @@ def symmetrical(matrix_A):
                 return False
     return True
 
-def Cholesky(matrix_A, vector_B):
+def Cholesky_Only_Decomposition(matrix_A):
     # In order to do cholesky, the matrix needs to be symmetrical, definite and positive
     if not symmetrical(matrix_A):
         sys.exit("Matrix_A must be definite positive symmetric")
@@ -67,7 +74,6 @@ def Cholesky(matrix_A, vector_B):
         for j in range(i):
             matrix_A[i][i] -= (matrix_A[i][j] ** 2)
         if matrix_A[i][i] <= 0:
-            print("this is where it went wrong")
             sys.exit("Matrix_A must be definite positive symmetric")
         matrix_A[i][i] = matrix_A[i][i] ** (1/2)
         for k in range(i + 1, n):
@@ -75,6 +81,9 @@ def Cholesky(matrix_A, vector_B):
             for l in range(i):
                 matrix_A[k][i] -= (matrix_A[i][l] * matrix_A[k][l])
             matrix_A[k][i] = matrix_A[k][i] / matrix_A[i][i]
+    return matrix_A
+
+def Cholesky(matrix_A, vector_B):
     # Turning B into Y
     vector_B[0] = vector_B[0] / matrix_A[0][0]
     for i in range(1, n):
@@ -164,4 +173,16 @@ def gauss_seidel(matrix_A, vector_B, tol):
             return x1, storage, num_iter
         x0 = x1[:]
 
-read_files('Matriz_A.dat', 'Vetor_B_01.dat')
+print("Atencao: os arquivos de Matrizes e Vetores precisam estar no diretório")
+print("Se quiser sair da execucao do programa digite: parar")
+matrix_A          = str(input("Insira o nome do arquivo da Matriz A: "))
+matrix_A          = read_matrix_A(matrix_A)
+matrix_A_LU       = LU_Only_Decomposition(matrix_A)
+matrix_A_Cholesky = Cholesky_Only_Decomposition(matrix_A)
+
+while True:
+    vector_B = str(input("Insira o nome do arquivo do Vetor B: "))
+
+
+read_files('test.txt', 'test_vector.txt')
+print(gauss_seidel(A, B, 0.00001))
