@@ -1,57 +1,25 @@
 import sys
 
-matrix_A = []
-vector_B = []
-
-def read_matrix_A(matrix_A):
-    global matrix_A
-    with open(matrix_A, 'r') as f:
+def read_matrix_A(matrix_A_file):
+    matrix_A = []
+    with open(matrix_A_file, 'r') as f:
         lines = f.readlines()
         size_of_matrix = len(lines)
         for l in lines:
             line = l.split()
             for i in range(size_of_matrix):
                 line[i] = float(line[i])
-            A.append(line)
+            matrix_A.append(line)
     f.close()
     return matrix_A
 
-def read_vector_B(vector_B):
-    global vector_B
-    with open(vector_B, 'r') as f2:
+def read_vector_B(vector_B_file):
+    vector_B = []
+    with open(vector_B_file, 'r') as f2:
         lines = f2.readlines()
         for l in lines:
-            B.append(float(l))
+            vector_B.append(float(l))
     f2.close()
-    return vector_B
-
-
-def LU_Only_Decomposition(matrix_A):
-    for i in range(n):
-        for j in range(i + 1, n):
-            if matrix_A[i][i] == 0:
-                sys.exit("Null pivot detected, LU decomposition without pivoting is not possible")
-            matrix_A[j][i] = matrix_A[j][i] / matrix_A[i][i]
-        for k in range(i + 1, n):
-            for l in range(i + 1, n):
-                matrix_A[l][k] -= (matrix_A[l][i] * matrix_A[i][k])
-    return matrix_A
-
-def LU_Decomposition(matrix_A, vector_B):
-    # Decomposing A into L and U
-    n = len(matrix_A)
-    # Turning B into Y
-    for i in range(1, n):
-        for j in range(i):
-            vector_B[i] -= (matrix_A[i][j] * vector_B[j])
-
-    # Turning B into X
-    vector_B[n - 1] = vector_B[n - 1] / matrix_A[n - 1][n - 1]
-    for i in range(n - 2, -1, -1):
-        for j in range(i + 1, n):
-            vector_B[i] -= (matrix_A[i][j] * vector_B[j])
-        vector_B[i] = vector_B[i] / matrix_A[i][i]
-
     return vector_B
 
 def symmetrical(matrix_A):
@@ -65,16 +33,28 @@ def symmetrical(matrix_A):
                 return False
     return True
 
+def LU_Only_Decomposition(matrix_A):
+    n = len(matrix_A)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if matrix_A[i][i] == 0:
+                sys.exit("Null pivot detected, LU decomposition without pivoting is not possible")
+            matrix_A[j][i] = matrix_A[j][i] / matrix_A[i][i]
+        for k in range(i + 1, n):
+            for l in range(i + 1, n):
+                matrix_A[l][k] -= (matrix_A[l][i] * matrix_A[i][k])
+    return matrix_A
+    
 def Cholesky_Only_Decomposition(matrix_A):
+    n = len(matrix_A)
     # In order to do cholesky, the matrix needs to be symmetrical, definite and positive
     if not symmetrical(matrix_A):
-        sys.exit("Matrix_A must be definite positive symmetric")
-    n = len(matrix_A)
+        sys.exit("Matrix must be definite positive symmetric")
     for i in range(n):
         for j in range(i):
             matrix_A[i][i] -= (matrix_A[i][j] ** 2)
         if matrix_A[i][i] <= 0:
-            sys.exit("Matrix_A must be definite positive symmetric")
+            sys.exit("Matrix must be definite positive symmetric")
         matrix_A[i][i] = matrix_A[i][i] ** (1/2)
         for k in range(i + 1, n):
             matrix_A[k][i] = matrix_A[i][k]
@@ -83,7 +63,22 @@ def Cholesky_Only_Decomposition(matrix_A):
             matrix_A[k][i] = matrix_A[k][i] / matrix_A[i][i]
     return matrix_A
 
+def LU_Decomposition(matrix_A, vector_B):
+    n = len(matrix_A)
+    # Turning B into Y
+    for i in range(1, n):
+        for j in range(i):
+            vector_B[i] -= (matrix_A[i][j] * vector_B[j])
+    # Turning B into X
+    vector_B[n - 1] = vector_B[n - 1] / matrix_A[n - 1][n - 1]
+    for i in range(n - 2, -1, -1):
+        for j in range(i + 1, n):
+            vector_B[i] -= (matrix_A[i][j] * vector_B[j])
+        vector_B[i] = vector_B[i] / matrix_A[i][i]
+    return vector_B
+
 def Cholesky(matrix_A, vector_B):
+    n = len(matrix_A)
     # Turning B into Y
     vector_B[0] = vector_B[0] / matrix_A[0][0]
     for i in range(1, n):
@@ -173,16 +168,47 @@ def gauss_seidel(matrix_A, vector_B, tol):
             return x1, storage, num_iter
         x0 = x1[:]
 
-print("Atencao: os arquivos de Matrizes e Vetores precisam estar no diretório")
-print("Se quiser sair da execucao do programa digite: parar")
-matrix_A          = str(input("Insira o nome do arquivo da Matriz A: "))
-matrix_A          = read_matrix_A(matrix_A)
-matrix_A_LU       = LU_Only_Decomposition(matrix_A)
-matrix_A_Cholesky = Cholesky_Only_Decomposition(matrix_A)
+ICOD = int(sys.argv[1])
+tol  = float(sys.argv[2])
 
-while True:
-    vector_B = str(input("Insira o nome do arquivo do Vetor B: "))
+matrix_A   = read_matrix_A('Matriz_A.dat')
+vector_B_1 = read_vector_B('Vetor_B_01.dat')
+vector_B_2 = read_vector_B('Vetor_B_02.dat')
+vector_B_3 = read_vector_B('Vetor_B_03.dat')
 
-
-read_files('test.txt', 'test_vector.txt')
-print(gauss_seidel(A, B, 0.00001))
+if ICOD == 1:
+    print("You chose LU Decomposition")
+    LU_Only_Decomposition(matrix_A)
+    print("Solution for Vector B 1 is: ")
+    print(LU_Decomposition(matrix_A, vector_B_1))
+    print("Solution for Vector B 2 is: ")
+    print(LU_Decomposition(matrix_A, vector_B_2))
+    print("Solution for Vector B 3 is: ")
+    print(LU_Decomposition(matrix_A, vector_B_3))
+elif ICOD == 2:
+    print("You chose Cholesky Decomposition")
+    Cholesky_Only_Decomposition(matrix_A)
+    print("Solution for Vector B 1 is: ")
+    print(Cholesky(matrix_A, vector_B_1))
+    print("Solution for Vector B 2 is: ")
+    print(Cholesky(matrix_A, vector_B_2))
+    print("Solution for Vector B 3 is: ")
+    print(Cholesky(matrix_A, vector_B_3))
+elif ICOD == 3:
+    print("You chose Jacobi Iteration Method")
+    print("Solution for Vector B 1 is: ")
+    print(jacobi(matrix_A, vector_B_1, tol))
+    print("Solution for Vector B 2 is: ")
+    print(jacobi(matrix_A, vector_B_2, tol))
+    print("Solution for Vector B 3 is: ")
+    print(jacobi(matrix_A, vector_B_3, tol))
+elif ICOD == 4:
+    print("You chose Gauss Seidel Iteration Method")
+    print("Solution for Vector B 1 is: ")
+    print(gauss_seidel(matrix_A, vector_B_1, tol))
+    print("Solution for Vector B 2 is: ")
+    print(gauss_seidel(matrix_A, vector_B_2, tol))
+    print("Solution for Vector B 3 is: ")
+    print(gauss_seidel(matrix_A, vector_B_3, tol))
+else:
+    sys.exit("Wrong ICOD, please insert values between 1 and 4")
