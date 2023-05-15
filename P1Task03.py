@@ -69,4 +69,4 @@ if ICOD == 1:
     print(f"Y = {Lagrange(coordinates, N, x_expected)}")
 elif ICOD == 2:
     print("You chose Regression")
-    
+    print(f"Y = {Regression(coordinates, N, x_expected)}")
