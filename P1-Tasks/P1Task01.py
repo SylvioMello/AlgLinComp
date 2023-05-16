@@ -125,7 +125,6 @@ def residue(x0, x1, n):
 
 def jacobi(matrix_A, vector_B, tol):
     if not diagonal_dominant(matrix_A):
-        print(0, 0)
         sys.exit("Matrix must be diagonal dominant")
     n = len(matrix_A)
     # Initialazing x0 and x1
@@ -148,7 +147,6 @@ def jacobi(matrix_A, vector_B, tol):
 
 def gauss_seidel(matrix_A, vector_B, tol):
     if not diagonal_dominant(matrix_A):
-        print(0, 0)
         sys.exit("Matrix must be diagonal dominant")
     n = len(matrix_A)
     x0 = [1 for _ in range(n)]
