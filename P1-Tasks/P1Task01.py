@@ -44,7 +44,7 @@ def LU_Only_Decomposition(matrix_A):
             for l in range(i + 1, n):
                 matrix_A[l][k] -= (matrix_A[l][i] * matrix_A[i][k])
     return matrix_A
-    
+
 def Cholesky_Only_Decomposition(matrix_A):
     n = len(matrix_A)
     # In order to do cholesky, the matrix needs to be symmetrical, definite and positive
@@ -145,34 +145,52 @@ def jacobi(matrix_A, vector_B, tol):
             return x1, storage, num_iter
         x0 = x1[:] # Copy elements from x1 to x0
 
+def symmetric_positive_definte(matrix_A):
+    n = len(matrix_A)
+    if n != len(matrix_A[0]):
+        return False
+    if not symmetrical(matrix_A):
+        return False
+    for i in range(n):
+        if matrix_A[i][i] <= 0:
+            return False
+        for j in range(i + 1, n):
+            if matrix_A[j][i] != matrix_A[i][j]:
+                return False
+    return True
+
 def gauss_seidel(matrix_A, vector_B, tol):
     if not diagonal_dominant(matrix_A):
-        sys.exit("Matrix must be diagonal dominant")
-    n = len(matrix_A)
-    x0 = [1 for _ in range(n)]
-    x1 = [0 for _ in range(n)]
-    storage = []
-    while True:
-        for i in range(n):
-            x1[i] = vector_B[i] / matrix_A[i][i]
-            for j in range(i):
-                x1[i] -= (matrix_A[i][j] * x1[j]) / matrix_A[i][i]
-            for j in range(i + 1, n):
-                x1[i] -= (matrix_A[i][j] * x0[j]) / matrix_A[i][i]
-        erro = residue(x0, x1, n)
-        storage.append(erro)
-        if erro < tol:
-            num_iter = len(storage)
-            return x1, storage, num_iter
-        x0 = x1[:]
+        print("The matrix is not diagonal dominant, checking if it is symmetric positive definite")
+        if not symmetric_positive_definte(matrix_A):
+            sys.exit("The matrix is not diagonal dominant and neither symmetric positive definite")
+        else:
+            print("The matrix is symmetric positive definite, continuing execution")
+            n = len(matrix_A)
+            x0 = [1 for _ in range(n)]
+            x1 = [0 for _ in range(n)]
+            storage = []
+            while True:
+                for i in range(n):
+                    x1[i] = vector_B[i] / matrix_A[i][i]
+                    for j in range(i):
+                        x1[i] -= (matrix_A[i][j] * x1[j]) / matrix_A[i][i]
+                    for j in range(i + 1, n):
+                        x1[i] -= (matrix_A[i][j] * x0[j]) / matrix_A[i][i]
+                erro = residue(x0, x1, n)
+                storage.append(erro)
+                if erro < tol:
+                    num_iter = len(storage)
+                    return x1, num_iter
+                x0 = x1[:]
 
 ICOD = int(sys.argv[1])
 tol  = float(sys.argv[2])
 
-matrix_A   = read_matrix_A('Matriz_A.dat')
-vector_B_1 = read_vector_B('Vetor_B_01.dat')
-vector_B_2 = read_vector_B('Vetor_B_02.dat')
-vector_B_3 = read_vector_B('Vetor_B_03.dat')
+matrix_A   = read_matrix_A('P1-Tasks/Matriz_A.dat')
+vector_B_1 = read_vector_B('P1-Tasks/Vetor_B_01.dat')
+vector_B_2 = read_vector_B('P1-Tasks/Vetor_B_02.dat')
+vector_B_3 = read_vector_B('P1-Tasks/Vetor_B_03.dat')
 
 if ICOD == 1:
     print("You chose LU Decomposition")
