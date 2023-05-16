@@ -159,6 +159,25 @@ def symmetric_positive_definte(matrix_A):
                 return False
     return True
 
+def raw_gauss_seidel(matrix_A, vector_B, tol):
+    n = len(matrix_A)
+    x0 = [1 for _ in range(n)]
+    x1 = [0 for _ in range(n)]
+    storage = []
+    while True:
+        for i in range(n):
+            x1[i] = vector_B[i] / matrix_A[i][i]
+            for j in range(i):
+                x1[i] -= (matrix_A[i][j] * x1[j]) / matrix_A[i][i]
+            for j in range(i + 1, n):
+                x1[i] -= (matrix_A[i][j] * x0[j]) / matrix_A[i][i]
+        erro = residue(x0, x1, n)
+        storage.append(erro)
+        if erro < tol:
+            num_iter = len(storage)
+            return x1, num_iter
+        x0 = x1[:]
+
 def gauss_seidel(matrix_A, vector_B, tol):
     if not diagonal_dominant(matrix_A):
         print("The matrix is not diagonal dominant, checking if it is symmetric positive definite")
@@ -166,23 +185,16 @@ def gauss_seidel(matrix_A, vector_B, tol):
             sys.exit("The matrix is not diagonal dominant and neither symmetric positive definite")
         else:
             print("The matrix is symmetric positive definite, continuing execution")
-            n = len(matrix_A)
-            x0 = [1 for _ in range(n)]
-            x1 = [0 for _ in range(n)]
-            storage = []
-            while True:
-                for i in range(n):
-                    x1[i] = vector_B[i] / matrix_A[i][i]
-                    for j in range(i):
-                        x1[i] -= (matrix_A[i][j] * x1[j]) / matrix_A[i][i]
-                    for j in range(i + 1, n):
-                        x1[i] -= (matrix_A[i][j] * x0[j]) / matrix_A[i][i]
-                erro = residue(x0, x1, n)
-                storage.append(erro)
-                if erro < tol:
-                    num_iter = len(storage)
-                    return x1, num_iter
-                x0 = x1[:]
+            result = raw_gauss_seidel(matrix_A, vector_B, tol)
+    else:
+        print("The matrix is diagonal dominant, checking if it is symmetric positive definite")
+        if not symmetric_positive_definte(matrix_A):
+            sys.exit("The matrix is diagonal dominant but its not symmetric positive definite")
+        else:
+            print("The matrix is both diagonal dominant and symmetric positive definite, continuing execution")
+            result = raw_gauss_seidel(matrix_A, vector_B, tol)
+    return result
+
 
 ICOD = int(sys.argv[1])
 tol  = float(sys.argv[2])
