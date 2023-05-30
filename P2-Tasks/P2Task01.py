@@ -1,7 +1,18 @@
 import sys
 
-def Jacobian(vector_X):
-    c2, c3, c4 = vector_X
+import sympy as sp
+
+def Jacobian(func, vars):
+    expr = sp.sympify(func)
+    symbols = sp.symbols(vars)
+    jacobian_matrix = sp.Matrix([sp.diff(expr, symbol) for symbol in symbols])
+    return jacobian_matrix
+
+function = '16*x**4 + 16*y**4 + z**4 - 16'
+variables = 'x y z'
+
+jacobian = Jacobian(function, variables)
+print(jacobian)
 
 def setting_non_linear_func(vector_X, c1, c2):
     c2, c3, c4 = vector_X
