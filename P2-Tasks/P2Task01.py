@@ -14,9 +14,6 @@ variables = 'x y z'
 jacobian = Jacobian(function, variables)
 print(jacobian)
 
-def setting_non_linear_func(vector_X, c1, c2):
-    c2, c3, c4 = vector_X
-
 def norma(vector_X):
     result = 0
 
@@ -49,8 +46,8 @@ def Newton_Method(n1, n2, tol=0.00001, num_iter=1000):
     x1 = [1, 0, 0]
     for i in range(num_iter):
         Jacob = Jacobian(x0)
-        funct = setting_non_linear_func(x0, n1, n2)
-        delta = LU_Decomposition(Jacob, funct)
+        #funct = setting_non_linear_func(x0, n1, n2)
+        delta = LU_Decomposition(Jacob)
         for j in range(len(delta)):
             delta[j] = -delta[j]
         for k in range(len(x1)):
