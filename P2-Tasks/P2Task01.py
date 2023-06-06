@@ -1,30 +1,67 @@
 import sys
-
+import numpy as np
 import sympy as sp
 
-def Jacobian(func, vars):
-    expr = sp.sympify(func)
-    symbols = sp.symbols(vars)
-    jacobian_matrix = sp.Matrix([sp.diff(expr, symbol) for symbol in symbols])
-    return jacobian_matrix
+def compute_jacobian(func, variables):
+    J = []
+    for i in range(len(func)):
+        row = []
+        for j in range(len(variables)):
+            derivative = sp.diff(func[i], variables[j])
+            row.append(derivative)
+        J.append(row)
+    return J
 
-function = '16*x**4 + 16*y**4 + z**4 - 16'
-variables = 'x y z'
+def evaluate_functions(func, values, variables):
+    return [expr.subs(zip(variables, values)) for expr in func]
 
-jacobian = Jacobian(function, variables)
-print(jacobian)
+def func(x):
+    c2, c3, c4 = x
+    return [
+        16 * (c2 ** 4) + 16 * (c3 ** 4) + (c4 ** 4) - 16,
+        (c2 ** 2) + (c3 ** 2) + (c4 ** 2) - 3,
+        (c2 ** 3) - c3 + c4 - 1
+    ]
 
 def norma(vector_X):
     result = 0
 
+def Newton_Method(tol=0.00001, num_iter=1000):
+    x0 = [1, 0, 0]
+    x1 = [1, 0, 0]
+    Jacob_result = []
+    variables = sp.symbols('c2 c3 c4')
+    for i in range(num_iter):
+        Jacob = compute_jacobian(func(variables), variables)
+        for jacob_funct in Jacob:
+            results = evaluate_functions(jacob_funct, x0, variables)
+            Jacob_result.append(results)
+        funct = evaluate_functions(func(variables), x0, variables)
+        print(Jacob_result)
+        print(funct)
+        delta = LU_Decomposition(Jacob_result, funct)
+        for j in range(len(delta)):
+            delta[j] = -delta[j]
+        for k in range(len(x1)):
+            x1[k] = x0[k] + delta[k]
+        tol_test = norma(delta) / norma(x1)
+        if tol_test < tol:
+            return x1
+        x0 = x1[:]
+    return "Converge acquired"
 
 def LU_Decomposition(matrix_A, vector_B):
+    matrix_A = np.array(matrix_A)
+    vector_B = np.array(vector_B)
     n = len(matrix_A)
     # Turning A into L and U
     for i in range(n):
+        # Pivoting
+        if matrix_A[i][i] == 0:
+            max_row_index = i + np.argmax(np.abs(matrix_A[i:, i]))
+            matrix_A[[i, max_row_index]] = matrix_A[[max_row_index, i]]
+            vector_B[[i, max_row_index]] = vector_B[[max_row_index, i]]
         for j in range(i + 1, n):
-            if matrix_A[i][i] == 0:
-                sys.exit("Null pivot detected, LU decomposition without pivoting is not possible")
             matrix_A[j][i] = matrix_A[j][i] / matrix_A[i][i]
         for k in range(i + 1, n):
             for l in range(i + 1, n):
@@ -41,19 +78,4 @@ def LU_Decomposition(matrix_A, vector_B):
         vector_B[i] = vector_B[i] / matrix_A[i][i]
     return vector_B
 
-def Newton_Method(n1, n2, tol=0.00001, num_iter=1000):
-    x0 = [1, 0, 0]
-    x1 = [1, 0, 0]
-    for i in range(num_iter):
-        Jacob = Jacobian(x0)
-        #funct = setting_non_linear_func(x0, n1, n2)
-        delta = LU_Decomposition(Jacob)
-        for j in range(len(delta)):
-            delta[j] = -delta[j]
-        for k in range(len(x1)):
-            x1[k] = x0[k] + delta[k]
-        tol_test = norma(delta) / norma(x1)
-        if tol_test < tol:
-            return x1
-        x0 = x1[:]
-    return "Converge acquired"
+print(Newton_Method())
