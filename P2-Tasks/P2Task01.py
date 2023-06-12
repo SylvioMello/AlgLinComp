@@ -1,13 +1,45 @@
 import numpy as np
+def newton_method(initial_vector, tol, max_iter):
+    vector = initial_vector
+    for _ in range(max_iter):
+        J = jacobian(vector)
+        F = func(vector)
+        delta_x = -np.linalg.solve(J, F)
+        vector += delta_x
+        tol_k = np.linalg.norm(delta_x) / np.linalg.norm(vector)
+        if tol_k < tol:
+            return vector
+    print("Convergence not reached")
+    return None
 
-def norm(vector):
-    result = 0
-    for elem in vector:
-        result += elem ** 2
-    return result ** (1/2)
+def broyden_method(initial_vector, initial_jacobian, tol, max_iterations):
+    current_vector = np.array(initial_vector)
+    current_jacobian = np.array(initial_jacobian)
+    for _ in range(max_iterations):
+        F = np.array(func(current_vector))
+        deltaX = -np.linalg.solve(current_jacobian, F)
+        next_vector = current_vector + deltaX
+        tolk = np.linalg.norm(deltaX) / np.linalg.norm(next_vector)
+        if tolk < tol:
+            return next_vector
+        Y = func(next_vector) - F
+        deltaXT = np.transpose(deltaX)
+        current_jacobian = current_jacobian + (np.outer(Y - np.dot(current_jacobian, deltaX), deltaXT)) / np.dot(deltaXT, deltaX)
+        current_vector = next_vector
+    print("Convergence not reached")
+    return None
 
-def jacobian(X):
-    x, y, z = X
+# Define the functions and jacobian for the system of equations
+def func(vector):
+    x, y, z = vector
+    return [
+        16 * (x ** 4) + 16 * (y ** 4) + (z ** 4) - 16,
+        (x ** 2) + (y ** 2) + (z ** 2) - 3,
+        (x ** 3) - y + z - 1
+    ]
+
+def jacobian(vector):
+    x, y, z = vector
     J = np.zeros((3, 3))
     J[0, 0] = 64 * (x ** 3)
     J[0, 1] = 64 * (y ** 3)
@@ -22,47 +54,20 @@ def jacobian(X):
     J[2, 2] = 1
     return J
 
-def function(X):
-    x, y, z = X
-    F = np.zeros(3)
-    F[0] = 16 * (x ** 4) + 16 * (y ** 4) + (z ** 4) - 16
-    F[1] = (x ** 2) + (y ** 2) + (z ** 2) - 3
-    F[2] = (x ** 3) - y + z - 1
-    return F
+# Set the tolerance and maximum number of iterations
+tolerance = 1e-6
+max_iterations = 10000
+initial_vector = [1, 1, -1]
 
-def newton_method(X0, tol, NITER):
-    Xk = X0
-    for k in range(1, NITER + 1):
-        J = jacobian(Xk)
-        F = function(Xk)
-        try:
-            deltaX = -np.linalg.solve(J, F)
-        except np.linalg.LinAlgError:
-            deltaX = -np.linalg.lstsq(J, F, rcond=None)[0]
-        Xk = Xk + deltaX
-        tolk = norm(deltaX) / norm(X0)
-        if tolk < tol:
-            print("Convergence reached.")
-            return Xk
-    print("Convergence not reached.")
-    return None
+# Apply Newton's method
+solution_newton = newton_method(initial_vector, tolerance, max_iterations)
+print("Solution using Newton's method:", solution_newton)
 
-def broyden_method(x0, tol=1e-6, max_iter=100):
-    x = x0.copy()
-    B = jacobian(x0)
-    for k in range(max_iter):
-        F = function(x)
-        try:
-            delta_x = np.linalg.solve(B, -F)
-        except np.linalg.LinAlgError:
-            delta_x = -np.linalg.lstsq(B, -F, rcond=None)[0]
-        x_new = x + delta_x
-        tolk = np.linalg.norm(delta_x) / np.linalg.norm(x_new)
-        if tolk < tol:
-            return x_new
-        Y = function(x_new) - F
-        delta_XT = delta_x[:, np.newaxis]
-        B = B + (Y - np.dot(B, delta_XT) * delta_XT) / np.dot(delta_XT, delta_x)
-        x = x_new
-    print("Convergence not reached")
-    return None
+# Set the tolerance and maximum number of iterations
+tolerance = 1e-6
+max_iterations = 10000
+initial_vector = [-1, -1, 1]
+
+# Apply Broyden's method
+solution_broyden = broyden_method(initial_vector, jacobian(initial_vector), tolerance, max_iterations)
+print("Solution using Broyden's method:", solution_broyden)
