@@ -8,6 +8,7 @@ def newton_method(initial_vector, tol, max_iter):
         vector += delta_x
         tol_k = np.linalg.norm(delta_x) / np.linalg.norm(vector)
         if tol_k < tol:
+            print(f"Convergance acquired with {_} iterations")
             return vector
     print("Convergence not reached")
     return None
@@ -21,6 +22,7 @@ def broyden_method(initial_vector, initial_jacobian, tol, max_iterations):
         next_vector = current_vector + deltaX
         tolk = np.linalg.norm(deltaX) / np.linalg.norm(next_vector)
         if tolk < tol:
+            print(f"Convergance acquired with {_} iterations")
             return next_vector
         Y = func(next_vector) - F
         deltaXT = np.transpose(deltaX)
