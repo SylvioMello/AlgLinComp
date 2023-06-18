@@ -55,7 +55,7 @@ def jacobian(vector):
     J[2, 2] = 1
     return J
 
-# Set the tolerance and maximum number of iterations
+# Set the tolerance, maximum number of iterations and the initial vector
 tolerance = 1e-6
 max_iterations = 10000
 initial_vector = [1, 1, 1]
@@ -64,7 +64,7 @@ initial_vector = [1, 1, 1]
 solution_newton = newton_method(initial_vector, tolerance, max_iterations)
 print("Solution using Newton's method:", solution_newton)
 
-# Set the tolerance and maximum number of iterations
+# Set the tolerance, maximum number of iterations and the initial vector
 tolerance = 1e-6
 max_iterations = 10000
 initial_vector = [1, 1, 1]
