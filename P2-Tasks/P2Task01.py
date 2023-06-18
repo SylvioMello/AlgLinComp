@@ -31,7 +31,6 @@ def broyden_method(initial_vector, initial_jacobian, tol, max_iterations):
     print("Convergence not reached")
     return None
 
-# Define the functions and jacobian for the system of equations
 def func(vector):
     x, y, z = vector
     return [
@@ -59,7 +58,7 @@ def jacobian(vector):
 # Set the tolerance and maximum number of iterations
 tolerance = 1e-6
 max_iterations = 10000
-initial_vector = [1, 1, -1]
+initial_vector = [1, 1, 1]
 
 # Apply Newton's method
 solution_newton = newton_method(initial_vector, tolerance, max_iterations)
@@ -68,7 +67,7 @@ print("Solution using Newton's method:", solution_newton)
 # Set the tolerance and maximum number of iterations
 tolerance = 1e-6
 max_iterations = 10000
-initial_vector = [-1, -1, 1]
+initial_vector = [1, 1, 1]
 
 # Apply Broyden's method
 solution_broyden = broyden_method(initial_vector, jacobian(initial_vector), tolerance, max_iterations)
