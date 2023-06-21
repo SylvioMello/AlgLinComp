@@ -49,7 +49,7 @@ A = 1.0    # Área
 z0 = 0.0   # posição inicial  -> z(t)
 v0 = 0.0   # velocidade inicial -> z'(t)
 h = 0.1   # Tamanho do passo de tempo -> delta t
-num_iterations = 10  # Número de iterações
+num_iterations = 200  # Número de iterações
 
 # Opção do método
 method = input("Escolha o método de solução (T - Taylor, R - Runge-Kutta): ")
