@@ -66,3 +66,6 @@ It also calculates two different integrals, m0 and m2, having its particularitie
 
 ### P2Task03.py
 
+This python code calculates the EDO in the problem of the falling body into the water
+
+Just by executing it you can find the tests and iterations available
