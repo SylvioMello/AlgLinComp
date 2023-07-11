@@ -1,4 +1,4 @@
-# AlgLinComp
+# Computational Linear Algebra
 Repository for Computational Linear Algebra Codes
 
 ## Instructions to Use The Code - P1-Tasks
