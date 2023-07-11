@@ -1,5 +1,5 @@
 # Computational Linear Algebra
-Repository for Computational Linear Algebra Codes
+Repository for Computational Linear Algebra Class Codes
 
 ## Instructions to Use The Code - P1-Tasks
 
